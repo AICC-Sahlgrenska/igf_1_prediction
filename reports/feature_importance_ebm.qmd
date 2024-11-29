@@ -1,0 +1,246 @@
+---
+title: "Projekt: Tillväxthormon" 
+author: "Elvira Carlén"
+format: 
+  revealjs:
+    embed-resources: true
+    footer: "2024-07-05"
+    transition: fade
+    title-slide-attributes: 
+          data-background-image: "/workspace/growthcurves/reports/figures/VGR_slide_background.png"
+mainfont: Verdana
+monofont: Arial
+editor: visual
+---
+
+
+## Intro {background-image="/workspace/growthcurves/reports/figures/VGR_slide_background.png"}
+
+::: incremental
+- Korrelationsanalys:
+   -    Korrelation mellan alla parametrar som har används vid modullering
+   -    Plottar: Parametrar med högst korelation
+
+- Relation mellan igf-1 sds, homa-ir och HbA1c
+
+- Modell: Explainable Boosting Machine (EBM)
+
+- Modell: Symbolisk Regression
+:::
+
+
+## Korrelationsanalys {background-image="/workspace/growthcurves/reports/figures/VGR_slide_background.png"}
+
+- Varför? Vissa metoder (t ex modellen "LASSO Regression") fungerar dåligt om det finns en hög korrelation mellan parametrar. Modeller som "Elastic Net" fungerar bättre med hög korrelation
+
+- Metod:  [Spearman's rank correlation](https://www.geeksforgeeks.org/python-pandas-dataframe-corr/)
+
+
+
+## Plottar: Korrelation  {style="font-size: 30%;"}
+::: {.panel-tabset} 
+#| fig-width: 40
+#| fig-height: 6
+
+###### Summering
+![](/workspace/growthcurves/reports/figures/multicollinearity_barchart_summary.png)
+
+###### (ostradiol vs testosteron) 
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_ostradiol_testosteron.png)
+
+###### (age vs testosteron) 
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_age_testosteron.png)
+
+###### (testicle_size vs testosteron) 
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_testicle_size_testosteron.png)
+
+###### (ostradiol vs testicle_size)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_ostradiol_testicle_size.png)
+
+###### (age vs testicle size) 
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_age_testicle_size.png)
+
+###### (age vs ostradiol)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_age_ostradiol.png)
+
+###### (birth weight vs birth length)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_birth_weight_birth_length.png)
+
+###### (perc_change_igf1_gh_dos_date_3m vs perc_change_igf1_gh_dos_date_1y)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_perc_change_igf1_gh_dos_date_3m_perc_change_igf1_gh_dos_date_1y.png)
+
+###### (birth length vs height velocity 0)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_birth_length_height_velocity_0.png)
+
+###### (ostradiol vs igf_1)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_ostradiol_igf_1.png)
+
+###### (igf_1 vs testosteron)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_igf_1_testosteron.png)
+
+###### (testicle size vs igf_1)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_testicle_size_igf_1.png)
+
+###### (age vs igf_1)
+![](/workspace/growthcurves/reports/figures/multicollinearity_scatter_age_igf_1.png)
+
+:::
+
+
+
+## Relation mellan igf-1, insulin, glukos and HbA1c {style="font-size: 40%;"}
+::: {.panel-tabset} 
+#| fig-width: 40
+#| fig-height: 6
+
+## Tabell: antal datapunkter
+```{python}
+import pandas as pd
+from itables import show
+complete_counts = pd.read_csv('/workspace/growthcurves/reports/feature_processing_reports/eda_data_points_igf1_hba1lc_insulin.csv', index_col=0)
+show(complete_counts)
+```
+
+## HbA1c vs igf1-sds
+![](/workspace/growthcurves/reports/figures/eda_hba1c_igf1_sds.png)
+
+## homa-ir vs igf1-sds
+![](/workspace/growthcurves/reports/figures/eda_igf1sds_homair.png)
+
+## Enskilda patienter: igf1-sds, Hba1c, homa-ir
+![](/workspace/growthcurves/reports/figures/eda_igf1_lineplot.png)
+
+## Alla patienter: Hba1c, homa-ir, igf1-sds
+![](/workspace/growthcurves/reports/figures/eda_igf1_lineplot_window.png)
+
+## Alla patienter: Hba1c
+![](/workspace/growthcurves/reports/figures/eda_hba1c_lineplot_window.png)
+
+## Alla patienter: homa-ir
+![](/workspace/growthcurves/reports/figures/eda_homa_lineplot_window.png)
+
+## Alla patienter: igf1-sds
+![](/workspace/growthcurves/reports/figures/eda_igf1sds_lineplot_window.png)
+
+:::
+
+
+
+## Modell: Explainable Boosting Machine (EBM) {background-image="/workspace/growthcurves/reports/figures/VGR_slide_background.png"}
+::: incremental
+- EBM: [Explainable Boosting Machine](https://interpret.ml/docs/ebm.html#)
+- EBR: [Explainable Boosting Regressor](https://interpret.ml/docs/python/api/ExplainableBoostingRegressor.html)
+
+- Fördel med modellen?
+:::
+
+
+## Plottar: Viktiga parametrar för modellen {style="font-size: 35%;"}
+::: {.panel-tabset} 
+#| fig-width: 40
+#| fig-height: 6
+
+###### Summering
+![Mean absolute score: medelvärdet av det absoluta predikterade värdet för varje parameter i träningsdatan](/workspace/growthcurves/reports/figures/ebm_global_explainability_summary_.png)
+
+###### igf_1
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_igf_1.png)
+
+###### age
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_age.png)
+
+###### sd weight
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_sd_weight.png)
+
+###### gh dose prop
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_gh_dose_proportional.png)
+
+###### perc change igf-1 3m
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_perc_change_igf1_gh_dos_date_3m.png)
+
+###### heigth velocity 1
+!["Height_velocity_1: change in height over 1 year for age 1-2"](/workspace/growthcurves/reports/figures/ebm_global_explainability_height_velocity_1.png)
+
+###### testicle size
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_testicle_size.png)
+
+###### birth length
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_birth_length.png)
+
+###### perc change igf-1 1y
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_perc_change_igf1_gh_dos_date_1y.png)
+
+###### target height deficit sds
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_target_height_deficit_sds.png)
+
+###### gh max stim
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_gh_max_stimulation.png)
+
+###### age gh start
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_age_gh_start.png)
+
+###### birth weight
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_birth_weight.png)
+
+###### heigth velocity 0
+!["Height_velocity_0: change in height over 1 year for age 0-1"](/workspace/growthcurves/reports/figures/ebm_global_explainability_height_velocity_0.png)
+
+###### height velocity gh start
+![](/workspace/growthcurves/reports/figures/ebm_global_explainability_height_velocity_gh_start-1.png)
+
+::: 
+
+
+## Plottar: Bedömning av enskilda individer {style="font-size: 55%;"}
+::: {.panel-tabset} 
+#| fig-width: 40
+#| fig-height: 6
+
+###### Person 1
+![](/workspace/growthcurves/reports/figures/ebm_local_explainability_person0.png)
+
+###### Person 2
+![](/workspace/growthcurves/reports/figures/ebm_local_explainability_person1.png)
+
+###### Person 3
+![](/workspace/growthcurves/reports/figures/ebm_local_explainability_person2.png)
+
+###### Person 4
+![](/workspace/growthcurves/reports/figures/ebm_local_explainability_person3.png)
+
+###### Person 5
+![](/workspace/growthcurves/reports/figures/ebm_local_explainability_person4.png)
+
+:::
+
+
+
+## Modell: Symbolisk Regression {background-image="/workspace/growthcurves/reports/figures/VGR_slide_background.png"}
+
+- Vad gör modellen?
+
+
+
+## Plottar: Symbolisk Regression {style="font-size: 30%;"}
+
+::: {.panel-tabset} 
+#| fig-width: 40
+#| fig-height: 6
+
+#### Summering
+```{python}
+import pandas as pd
+from itables import show
+complete_counts = pd.read_csv('/workspace/data/data_elvira/gpg_reports/model_results.csv')
+show(complete_counts)
+```
+
+#### Räkning av parametrar: Modeller med top 5 högst "Test R2"
+```{python}
+import pandas as pd
+from itables import show
+complete_counts = pd.read_csv('/workspace/data/data_elvira/gpg_reports/model_variable_frequencies_top5.csv', index_col=0)
+show(complete_counts)
+```
+
+:::

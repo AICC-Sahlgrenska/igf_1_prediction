@@ -1,0 +1,99 @@
+config:
+  paths:
+    home: "/workspace/growthcurves"
+    raw: "/workspace/data/raw"
+    data: "data/interim"
+    data-result: "reports/data_processing_reports"
+    features: "data/processed"
+    feature-result: "reports/feature_processing_reports"
+    table1: "reports/table1"
+    models: models/
+    results: reports/results/
+    stylefile: "/workspace/growthcurves/files/vgrsu.mplstyle"
+seed: 2023 # this should give a train - hold-out split that does not differ between groups
+
+data:
+  merge_tolerance_hormones: 7
+  merge_tolerance_length: 7
+
+features:
+  target_column: 'igf_1_sds'
+  target_as_delta: False
+  target_shift_months: 12
+  target_merge_tolerance: 60
+  height_velocity_column_baby: 'height_cm'
+  height_velocity_column_treatment: 'sd_height'
+  height_velocity_missing_tolerance: 0.166 # how much offset do we allow from specific age
+  man_mean: 180.4 # height, adult swedish man
+  man_sd: 6.6 # height, adult swedish man
+  woman_mean: 167.6 # height, adult swedish woman
+  woman_sd: 6.1 # height, adult swedish woman
+  delta_dict: {
+    'target_height_deficit_sds': {'months': 12,'merge_tolerance_days': 60},
+    'sd_weight': {'months': 12, 'merge_tolerance_days': 60},
+    'testicle_size': {'months': 12,'merge_tolerance_days': 60},
+    'gh_dose_proportional': {'months': 3, 'merge_tolerance_days': 180},
+    }
+  cv_multiplier: 2.7718585822512662 # multiplier for significant change over time, 1.96*sqrt(2)
+  testosterone_change:
+    span_start: [0, 0.2, 0.3, 1.5, 5]
+    span_end: [0.2, 0.3, 1.5, 5, 10000]
+    cv: [60, 38, 16, 9, 8]
+  ostradiol_change:
+    span_start: [0, 6, 20, 35, 300]
+    span_end: [6, 20, 35, 300, 10000]
+    cv: [40, 20, 14, 8, 6]
+  igf1_change:
+    span_start: [0, 225]
+    span_end: [225, 10000]
+    cv: [16, 9]
+  igfbp3_change:
+    span_start: [0]
+    span_end: [10000]
+    cv: [10]
+  igf1_igfbp3_change:
+    span_start: [0, 5]
+    span_end: [5, 10000]
+    cv: [17, 15]
+
+prepare_modelling:
+  required_columns: ["target_igf_1_sds", "igf_1_sds"] # utan dessa kolumner får du inte vara med i prediktionerna
+  acceptable_phases: ["maintenance"]
+  acceptable_sex: ["Male"]
+  hold_out_size: 0.3
+
+train:
+  run_full_cv: True # if False, runs only a very short CV to save time
+  datapoints_per_sub: "all" # options "all" or a number
+  n_splits: 5  # Number of folds for cross-validation
+  test_size: 0.3 # proportion of test set in cross validation
+  x_colnames: ["igf_1_sds", "igf_1_igfbp_3",
+            "age", "sd_weight", "target_height_deficit_sds", "gh_dose_proportional",
+            "birth_weight", "birth_length",
+            "age_gh_start", "gh_max_stimulation", 
+            'height_velocity_gh_start_1', 'height_velocity_0', 'height_velocity_1',
+            'perc_change_igf1_gh_dos_date_3m','perc_change_igf1_gh_dos_date_1y',
+            'testosteron_imputed', 'ostradiol_imputed', 'testicle_size_imputed',
+            'missing_inj_last_365d',
+            # new values from flexible delta
+            'igf_1_up', 'igf_1_down',
+            'igf_1_igfbp_3_up', 'igf_1_igfbp_3_down',
+            'igfbp_3_up', 'igfbp_3_down',
+            'testosteron_imputed_up', 'testosteron_imputed_down',
+            'ostradiol_imputed_up', 'ostradiol_imputed_down']
+            # also we automatically add all columns with the word "delta"
+  y_colname: ["target_igf_1_sds"]
+  use_scaler: False
+
+train_symbolic:
+    run_full_cv: True # if False, runs only a very short CV to save time
+    evaluations: [100, 500, 1000] # minimum 64
+    tree_depth: [2, 3, 4] 
+    feat_sel: [-1] #, 5, 10, 20]
+    # finetune_evals: [100, 500, 1000] 
+    finetune_strategy: [False]
+    verbosity: [True]
+    time_limit: [-1] 
+    generations: [-1]
+
+evaluate:

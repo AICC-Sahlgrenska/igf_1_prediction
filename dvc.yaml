@@ -1,0 +1,72 @@
+stages:
+  data:
+    cmd: /workspace/.conda/envs/gpg-modified/bin/python growthcurves/data/make_dataset.py  
+    deps:
+    - /workspace/data/raw
+    - growthcurves/data/make_dataset.py
+    params:
+    - seed
+    - data
+    outs:
+    - data/interim
+    - reports/data_processing_reports
+
+  features:
+    cmd: /workspace/.conda/envs/gpg-modified/bin/python growthcurves/features/build_features.py  
+    deps:
+    - /workspace/data/raw
+    - data/interim
+    - growthcurves/features/build_features.py
+    params:
+    - seed
+    - features
+    outs:
+    - data/processed/processed.csv
+
+  prepare_modelling:
+    cmd: /workspace/.conda/envs/gpg-modified/bin/python growthcurves/prepare/prepare_modelling.py  
+    deps:
+    - data/processed/processed.csv
+    - growthcurves/prepare/prepare_modelling.py  
+    params:
+    - seed
+    - prepare_modelling
+    outs:
+    - data/processed/train.csv
+    - data/processed/hold-out-validation.csv
+    - reports/table1
+
+  train:
+    cmd: /workspace/.conda/envs/gpg-modified/bin/python growthcurves/modeling/train_model.py  
+    deps:
+    - data/processed/train.csv
+    - growthcurves/modeling/train_model.py  
+    params:
+    - seed
+    - train
+    outs:
+    - models/other/
+  
+  train_symbolic:
+    cmd: /workspace/.conda/envs/gpg-modified/bin/python growthcurves/modeling/train_generative_model.py  
+    deps:
+    - data/processed/modelling_dataset.joblib
+    - growthcurves/modeling/train_generative_model.py
+    params:
+    - seed
+    - train_symbolic
+    outs:
+    - models/symbolic/
+
+  evaluate:
+    cmd: /workspace/.conda/envs/gpg-modified/bin/python growthcurves/modeling/evaluate_models.py  
+    deps:
+    - models/
+    - data/processed/hold-out-validation.csv
+    - data/processed/modelling_dataset.joblib
+    - growthcurves/modeling/evaluate_models.py  
+    params:
+    - seed
+    - evaluate
+    metrics:
+    - reports/results/results.json
