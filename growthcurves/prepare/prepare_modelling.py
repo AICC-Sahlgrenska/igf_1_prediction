@@ -186,6 +186,9 @@ def main():
     data = data.dropna(subset=required_columns)
     data = data.query("phase in @phases")
 
+    ## remove data points with too many missing doses
+    data = data.query("missing_inj_last_365d < 60 | missing_inj_last_365d.isnull()", engine='python')
+
     ## define colnames used for modeling & reporting
     x_colnames = params["train"]["x_colnames"]
     y_colname = params["train"]["y_colname"]
