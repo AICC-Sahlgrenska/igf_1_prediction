@@ -8,7 +8,7 @@ The codebase associated with paper [manuscript ID to come after acceptance], ava
 
 The code is conceptualised as a [dvc](https://dvc.org/) pipeline, which is a simple Directed Acyclic Graph (DAG) pipeline defining the data handling steps from data import all the way to model outputs. All of the steps happen automatically when the pipeline gets triggered, which allows you as a reader to see exactly how the analysis was conducted.
 
-These steps are as follows (these are defined in the [dvc.yaml file](igf_1_prediction_growth_hormone_deficiency/dvc.yaml)):
+These steps are as follows (these are defined in the [dvc.yaml file](https://github.com/AICC-Sahlgrenska/igf_1_prediction/blob/main/dvc.yaml)):
 1. data: Data files are loaded from a separate data share, simple data cleaning (e.g. adjusting variable names) is done and the different data files are combined.
 2. features: When a feature needs to be calculated (i.e. it was not present in the original data file in the correct format), it gets calculated here. For example, all features that show change (for example, change in target height deficit) need to be calculated here.
 3. prepare_modelling: Select features used for modelling and create Table1. Exclude data with missing values and split data into testing and training set.
@@ -56,7 +56,7 @@ make
 3. To then develop with the rest of the codebase, you need to run the following:
 ```bash
 cd /workspace
-git clone https://git.vgregion.se/digital_foui/growthcurves.git
+git clone https://github.com/AICC-Sahlgrenska/igf_1_prediction.git
 cd growthcurves
 conda env create -f environment.yml 
 conda activate gpg-modified
@@ -129,9 +129,12 @@ All features for modeling of maintenance phase as discussed 2024-02-06:
 ### Imputation methods
 | Feature name | Imputation strategy | Comments? | 
 | ------ | ------ |------ | 
-| Testosterone | 0 | Testosterone was first measured from 2 years before puberty was reached. We are assuming values longer back than 2 years before puberty are close enough to 0 to approximate them as 0 | 
-| Ostradiol | 0 | Ostradiol was first measured from 2 years before puberty was reached. We are assuming values longer back than 2 years before puberty are close enough to 0 to approximate them as 0 |
+| Testosterone | 0.05 nmol/L | Testosterone was first measured from 2 years before puberty was reached. WWe impute values from before then with limit of detection (LOD)/2 | 
+| Ostradiol | 0.05 nmol/L | Ostradiol was first measured from 2 years before puberty was reached. We impute values from before then with limit of detection (LOD)/2 |
 | testicle size | forward fill | The assumption is that the testicle size does not generally shrink during puberty, so values between visits where testicle size was estimated were imputed to the value of the previous visit |
+| GH dose | forward fill | The assumption is that on the visits when no new GH dose is set, the dosing continues as the same |
+| target height deficit | forward fill | Not all visits include measuring of height. We assume that target height deficit stays the same between two visits, and only gets updated when the child is measured again. |
+| weight (SDS) | forward fill | Not all visits include measuring of weight. We assume that the weight SDS stays the same between two visits, and only gets updated when the child is measured again. |
 
 
 
