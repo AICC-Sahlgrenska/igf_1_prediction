@@ -95,7 +95,7 @@ Decision log on the data and analytical choices embedded in the code
 ### Features
 
 | Feature name | Definition | 
-| ------ | ------ |------ | 
+| ------ | ------ | 
 | **Early life features** |
 | birth weight | in grams | 
 | birth height | in cm |
