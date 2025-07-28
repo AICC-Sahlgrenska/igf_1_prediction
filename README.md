@@ -98,14 +98,6 @@ This is a living table about features and how they are defined, to be updated ev
 
 All features for modeling of maintenance phase as discussed 2024-02-06: 
 - age (decimals)
-- age at GHStart
-- sex
-- dose at t0
-- delta (dose at t0 - 6 months)
-- IGF-1 at t0
-- IGF-1 at t0-12 months
-- delta IGF-1 GHStart - GHStart + 3 months
-- delta IGF-1 GHStart - GHStart + 12 months
 - gh max (<- data currently missing!!)
 - Tanner stage at t0
 - delta (Tanner stage at t0 - 6 months)
@@ -119,12 +111,50 @@ All features for modeling of maintenance phase as discussed 2024-02-06:
 - delta (weightSDS at t0 - 6 months)
 - whether the patient has historically missed many doses (this needs further refinement)
 
-| Feature name | Definition | Comments? | 
+| Feature name | Definition | 
 | ------ | ------ |------ | 
-| height_velocity | change in height over 1 year (height_velocity_0 is for age 0-1, height_velocity_1 is for age 1-2, height_velocity_gh_start-1 is for ghstart-1 - ghstart). height_velocity_1 and height_velocity_2 are defined as cm/year, height_velocity_gh_start-1 is defined as change in SDS | Change is defined in cm for early growth and SD for growth close to GH because it seems difficult to standardise height for children with different gestational ages, but the doctors believe that this will even out over the first year | 
+| **Early life features** |
+| birth weight | in grams | 
+| birth height | in cm |
+| height_velocity_0 | Growth first year of life (cm) | 
+| height_velocity_1 | Growth second year of life (cm) | 
+| **Early treatment features** |
+| age treatment start | Age at treatment start |
+| gh_max | Stimulated GH peak (μg/L) |
+|  height_velocity_gh_start-1 | change in height over 1 year immediately prior to GH treatment onset, defined as change in SDS |
+| delta IGF-1 early treatment 3 months | change in IGF-1 at first 3 months of treatment | 
+| delta IGF-1 early treatment 12 months | change in IGF-1 at first 12 months of treatment |
+| **Features related to prediction time (t0)** |
+| age | years (incl decimals) |
+| weight | weight at t0, in SDS | 
+| delta_weight | Change in weight past 12 months (SDS) |
+| target_height_deficit_sds | Target height deficit (SDS) |
+| delta_target_height_deficit_sds | Change in target height deficit past 12 months (SDS) |
+| gh_dos t0 | GH dose (mg/kg/day) | 
+| delta gh_dos | Change in GH dose past 3 months (mg/kg/day) |
+| IGF-1 | IGF-1 value at t0 |
+| delta IGF-1 | Was there a significant change IGF-1 level in the 12 months prior to t0? (see paper for a more thorough discussion on how we defined a significant change) |
+| delta IGFBP3 |  Was there a significant change IGFBP3 level in the 12 months prior to t0? (see paper for a more thorough discussion on how we defined a significant change) |
+| IGF-1/IGFBP3 | IGF-1/IGFBP3 proportion at t0 |
+| delta IGF-1/IGFBP3 | Was there a significant change  IGF-1/IGFBP3 level in the 12 months prior to t0? (see paper for a more thorough discussion on how we defined a significant change) |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+
+
 | phase | Phase describes the phase of the treatment. The currently implemented phases are pre-treatment: beginning of data – GHDosDate ; catch-up: GHDosDate – GHDosMDate ; maintenance-growth: GHDosMDate – Puberty start date; pubertal-growth: Puberty start date – GH stop date; post-treatment: GH stop date - end of data | We will at least initially treat maintenance-growth and pubertal-growth as a single phase; this may need to be revised later |
 | puberty_start_date | puberty start is defined as the first date when a boy has testis size 4.0ml or larger or the first date when a girl had >= 2 in the Breast&genitalia tanner stadium rating | some subjects went up and down in testis size in a curious pattern, a corrections file was used for these |
+
+
+
 | gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+
 
 ### Imputation methods
 | Feature name | Imputation strategy | Comments? | 
