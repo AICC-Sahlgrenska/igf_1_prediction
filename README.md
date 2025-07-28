@@ -93,23 +93,6 @@ Decision log on the data and analytical choices embedded in the code
 | 2023-10-01 | The primary outcome measure will be unadjusted IGF-1 | IGF-1 SDS already takes into account a number of our variables, and it is not clear how good the normalization is (note that this decision was later overruled) | 
 
 ### Features
-# TODO Full list of features with their definitions
-This is a living table about features and how they are defined, to be updated every time we merge a feature branch. 
-
-All features for modeling of maintenance phase as discussed 2024-02-06: 
-- age (decimals)
-- gh max (<- data currently missing!!)
-- Tanner stage at t0
-- delta (Tanner stage at t0 - 6 months)
-- sex hormones at t0
-- delta (sex hormones at t0 - 12 months)
-- heightSDS/(average parents' heightSDS) at t0
-- delta (heightSDS/(average parents' heightSDS) at t0 - 6 months)
-- height velocity (SDS) at 1yo, 2yo and the last year prior to GHStart 
-- weight velocity (SDS) at 1yo, 2yo 
-- weightSDS at t0
-- delta (weightSDS at t0 - 6 months)
-- whether the patient has historically missed many doses (this needs further refinement)
 
 | Feature name | Definition | 
 | ------ | ------ |------ | 
@@ -133,27 +116,21 @@ All features for modeling of maintenance phase as discussed 2024-02-06:
 | gh_dos t0 | GH dose (mg/kg/day) | 
 | delta gh_dos | Change in GH dose past 3 months (mg/kg/day) |
 | IGF-1 | IGF-1 value at t0 |
-| delta IGF-1 | Was there a significant change IGF-1 level in the 12 months prior to t0? (see paper for a more thorough discussion on how we defined a significant change) |
-| delta IGFBP3 |  Was there a significant change IGFBP3 level in the 12 months prior to t0? (see paper for a more thorough discussion on how we defined a significant change) |
+| delta IGF-1 | Was there a significant change IGF-1 level between the two most recent measurements? (see paper for a more thorough discussion on how we defined a significant change) |
+| delta IGFBP3 |  Was there a significant change IGFBP3 level between the two most recent measurements? (see paper for a more thorough discussion on how we defined a significant change) |
 | IGF-1/IGFBP3 | IGF-1/IGFBP3 proportion at t0 |
-| delta IGF-1/IGFBP3 | Was there a significant change  IGF-1/IGFBP3 level in the 12 months prior to t0? (see paper for a more thorough discussion on how we defined a significant change) |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
+| delta IGF-1/IGFBP3 | Was there a significant change IGF-1/IGFBP3 between the two most recent measurements? (see paper for a more thorough discussion on how we defined a significant change) |
+| testicle_size | Testicle size (mL) |
+| delta testicle size | Change in testicle size past 12 months (mL) | 
+| testosteron | Testosterone (nmol/L) |
+| delta testosteron |  Was there a significant change in testosterone between the two most recent measurements? (see paper for a more thorough discussion on how we defined a significant change) |
+| estradiol | Estradiol (pmol/L) |
+| delta estradiol |  Was there a significant change in estradiol between the two most recent measurements? (see paper for a more thorough discussion on how we defined a significant change) |
+| missing_doses | Missing injections the past year (n)|
+| **Target** |
+| Target IGF-1 (SDS) | IGF-1 SDS level at t0 + 3 months (3 months prediction) or at t0 + 12 months (12 months prediction)  |
 
 
-| phase | Phase describes the phase of the treatment. The currently implemented phases are pre-treatment: beginning of data – GHDosDate ; catch-up: GHDosDate – GHDosMDate ; maintenance-growth: GHDosMDate – Puberty start date; pubertal-growth: Puberty start date – GH stop date; post-treatment: GH stop date - end of data | We will at least initially treat maintenance-growth and pubertal-growth as a single phase; this may need to be revised later |
-| puberty_start_date | puberty start is defined as the first date when a boy has testis size 4.0ml or larger or the first date when a girl had >= 2 in the Breast&genitalia tanner stadium rating | some subjects went up and down in testis size in a curious pattern, a corrections file was used for these |
-
-
-
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
-| gh_dos | GH dose is defined as µg/kg/dygn | We expect this to be the same for everyone in catch-up phase; some changes for some participants when we reach maintenance phase |
 
 
 ### Imputation methods
